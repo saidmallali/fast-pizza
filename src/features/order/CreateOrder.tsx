@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 import {
   Form,
   ActionFunctionArgs,
@@ -42,6 +44,8 @@ const fakeCart = [
 function CreateOrder() {
   const navigation = useNavigation();
   const formErrors = useActionData() as ErrorForm;
+  const username = useSelector((state: RootState) => state.user.username);
+
   // const [withPriority, setWithPriority] = useState(false);
   const cart = fakeCart;
   const isSubmitting = navigation.state === "submitting";
@@ -54,7 +58,13 @@ function CreateOrder() {
       <Form method="POST">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
-          <input className="input grow" type="text" name="customer" required />
+          <input
+            className="input grow"
+            type="text"
+            name="customer"
+            required
+            defaultValue={username}
+          />
         </div>
 
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
