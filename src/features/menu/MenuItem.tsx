@@ -1,17 +1,16 @@
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
 import { useDispatch } from "react-redux";
-import { addItem, increaseItemQuantity } from "../cart/cartSlice";
+import {
+  addItem,
+  getCurrentQuantityById,
+  getPizzaItemById,
+  increaseItemQuantity,
+} from "../cart/cartSlice";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-interface Pizza {
-  id?: number;
-  name?: string;
-  unitPrice: number;
-  imageUrl?: string;
-  ingredients?: string[];
-  soldOut?: boolean;
-}
+import { Pizza } from "../../entities/Pizza";
+import DeleteItem from "../cart/DeleteItem";
+import UpdateItemQuantity from "../cart/UpdateItemQuantity";
 
 interface Props {
   pizza: Pizza;
@@ -20,10 +19,11 @@ interface Props {
 function MenuItem({ pizza }: Props) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
   const dispatch = useDispatch();
-  const cart = useSelector((state: RootState) => state.cart.cart);
-  const existedItem = cart.find((item) => item.pizzaId === id);
+  const currentQuantity = useSelector(getCurrentQuantityById(id));
+  console.log("cureentQuent", currentQuantity);
+  const pizzaItem = useSelector(getPizzaItemById(id));
+  console.log("pizzaItem", pizzaItem);
   if (!pizza) return null;
-
   const handleAddToCart = () => {
     const newItem = {
       pizzaId: id,
@@ -33,8 +33,7 @@ function MenuItem({ pizza }: Props) {
       totalPrice: 1 * unitPrice,
     };
 
-    if (existedItem) dispatch(increaseItemQuantity(id));
-    if (!existedItem) dispatch(addItem(newItem));
+    dispatch(addItem(newItem));
   };
 
   return (
@@ -58,11 +57,22 @@ function MenuItem({ pizza }: Props) {
             </p>
           )}
           {!soldOut && (
-            <Button onClick={handleAddToCart} type="small">
-              {existedItem?.pizzaId === id
-                ? `Add more to cart: ${existedItem?.quantity}`
-                : "Add to cart"}
-            </Button>
+            <>
+              {currentQuantity && currentQuantity >= 1 && (
+                <div className="flex items-center gap-3 sm:gap-8">
+                  <UpdateItemQuantity id={id} currentQuent={currentQuantity} />
+                  <DeleteItem type="small" id={id} />
+                </div>
+              )}
+
+              {!currentQuantity && (
+                <Button onClick={handleAddToCart} type="small">
+                  {pizzaItem?.pizzaId === id
+                    ? `Add to cart: ${pizzaItem?.quantity}`
+                    : "Add to cart"}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

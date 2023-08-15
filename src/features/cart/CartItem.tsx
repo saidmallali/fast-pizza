@@ -1,8 +1,9 @@
 import { formatCurrency } from "../../utils/helpers";
 import { Pizza } from "../../entities/Pizza";
-import Button from "../../ui/Button";
-import { useDispatch } from "react-redux";
-import { deleteItem } from "./cartSlice";
+import DeleteItem from "./DeleteItem";
+import UpdateItemQuantity from "./UpdateItemQuantity";
+import { useSelector } from "react-redux";
+import { getCurrentQuantityById } from "./cartSlice";
 
 interface Props {
   item: Pizza;
@@ -10,11 +11,7 @@ interface Props {
 
 function CartItem({ item }: Props) {
   const { pizzaId, name, quantity, totalPrice } = item;
-  const dispatch = useDispatch();
-
-  const handelDeleteItem = (id: number) => {
-    dispatch(deleteItem(id));
-  };
+  const currentQuantity = useSelector(getCurrentQuantityById(pizzaId));
 
   return (
     <li className="py-3 sm:flex sm:items-center sm:justify-between">
@@ -23,9 +20,10 @@ function CartItem({ item }: Props) {
       </p>
       <div className="flex items-center justify-between sm:gap-6">
         <p className="text-sm font-bold">{formatCurrency(totalPrice)}</p>
-        <Button onClick={() => handelDeleteItem(pizzaId)} type="small">
-          Delete
-        </Button>
+        {currentQuantity && currentQuantity >= 1 && (
+          <UpdateItemQuantity id={pizzaId} currentQuent={currentQuantity} />
+        )}
+        <DeleteItem type="small" id={pizzaId} />
       </div>
     </li>
   );
