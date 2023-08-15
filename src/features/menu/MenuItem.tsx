@@ -1,10 +1,13 @@
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
-
+import { useDispatch } from "react-redux";
+import { addItem, increaseItemQuantity } from "../cart/cartSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 interface Pizza {
   id?: number;
   name?: string;
-  unitPrice?: number;
+  unitPrice: number;
   imageUrl?: string;
   ingredients?: string[];
   soldOut?: boolean;
@@ -16,8 +19,24 @@ interface Props {
 
 function MenuItem({ pizza }: Props) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
-
+  const dispatch = useDispatch();
+  const cart = useSelector((state: RootState) => state.cart.cart);
+  const existedItem = cart.find((item) => item.pizzaId === id);
   if (!pizza) return null;
+
+  const handleAddToCart = () => {
+    const newItem = {
+      pizzaId: id,
+      name,
+      quantity: 1,
+      unitPrice,
+      totalPrice: 1 * unitPrice,
+    };
+
+    if (existedItem) dispatch(increaseItemQuantity(id));
+    if (!existedItem) dispatch(addItem(newItem));
+  };
+
   return (
     <li className="flex gap-4 py-2 ">
       <img
@@ -38,7 +57,13 @@ function MenuItem({ pizza }: Props) {
               Sold out
             </p>
           )}
-          <Button type="small">Add to cart</Button>
+          {!soldOut && (
+            <Button onClick={handleAddToCart} type="small">
+              {existedItem?.pizzaId === id
+                ? `Add more to cart: ${existedItem?.quantity}`
+                : "Add to cart"}
+            </Button>
+          )}
         </div>
       </div>
     </li>

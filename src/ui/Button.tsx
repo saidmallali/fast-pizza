@@ -5,9 +5,10 @@ interface Props {
   disabled?: boolean;
   to?: string;
   type?: "primary" | "small" | "secondary";
+  onClick?: () => void;
 }
 
-function Button({ children, disabled, to, type = "primary" }: Props) {
+function Button({ onClick, children, disabled, to, type = "primary" }: Props) {
   const base =
     "inline-block text-sm rounded-full bg-yellow-400 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-300 hover:bg-yellow-300 focus:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 disabled:cursor-not-allowed";
 
@@ -20,13 +21,13 @@ function Button({ children, disabled, to, type = "primary" }: Props) {
 
   if (to)
     return (
-      <Link to={to} className={styles[type]}>
+      <Link onClick={onClick} to={to} className={styles[type]}>
         {children}
       </Link>
     );
 
   return (
-    <button disabled={disabled} className={styles[type]}>
+    <button onClick={onClick} disabled={disabled} className={styles[type]}>
       {children}
     </button>
   );
