@@ -5,7 +5,7 @@ interface Props {
   disabled?: boolean;
   to?: string;
   type?: "primary" | "small" | "secondary" | "round";
-  onClick?: () => void;
+  onClick?: (e: MouseEvent | any) => void;
 }
 
 function Button({ onClick, children, disabled, to, type = "primary" }: Props) {

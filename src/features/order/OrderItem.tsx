@@ -1,13 +1,26 @@
+import { Pizza } from "../../entities/Pizza";
 import { formatCurrency } from "../../utils/helpers";
-function OrderItem() {
-  // const { quantity, name, totalPrice } = item;
+
+interface Props {
+  item: Pizza;
+  ingredients?: string[];
+  isLoadingIngredients?: boolean;
+}
+
+function OrderItem({ item, isLoadingIngredients, ingredients }: Props) {
+  const { quantity, name, totalPrice } = item;
 
   return (
-    <li>
-      <div>
-        <p>{/* <span>{quantity}&times;</span> {name} */}</p>
-        {/* <p>{formatCurrency(totalPrice)}</p> */}
+    <li className="space-y-1 py-3">
+      <div className="felx items-center justify-between gap-4 text-sm">
+        <p>
+          <span className="font-bold">{quantity}&times;</span> {name}
+        </p>
+        <p className="font-bold">{formatCurrency(totalPrice)}</p>
       </div>
+      <p className="text-sm capitalize italic text-stone-500">
+        {isLoadingIngredients ? "Loading..." : ingredients?.join(", ")}
+      </p>
     </li>
   );
 }
